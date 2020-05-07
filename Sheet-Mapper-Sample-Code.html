@@ -97,11 +97,11 @@
       };
 
       //YOUR TURN: add your Mapbox access token 
-      mapboxgl.accessToken = '<Replace with your access token>';
+      mapboxgl.accessToken = 'pk.eyJ1IjoicGxhbmVtYWQiLCJhIjoiY2s5d3ppeTBtMGV4YTNlcDJxMG85cDd1cSJ9.Ive7Qs3rTp7os9mXJ3jmCA';
       var map = new mapboxgl.Map({
         container: 'map', // container id
-        style: "<Replace with a Mapbox style url>", //YOUR TURN: choose a style: https://docs.mapbox.com/api/maps/#styles
-        center: [-122.411464, 37.7852299], // starting position [lng, lat]
+        style: "mapbox://styles/mapbox/streets-v11", //YOUR TURN: choose a style: mapbox://styles/mapbox/streets-v11
+        center: [77.29808,28.5920], // starting position [lng, lat]
         zoom: 9, // starting zoom
         transformRequest: transformRequest
       });
@@ -115,7 +115,7 @@
       function init() {
         Tabletop.init({
           // YOUR TURN: change 'key' value to point to your spreadsheet
-          key: '<Link to your shared spreadsheet goes here!>',
+          key: 'https://docs.google.com/spreadsheets/d/1LeTVNOlv2TRkwOfHLU4Wmao0YEMLL-odBq9Buwe2UZM/edit?usp=sharing',
           // once Tabletop has loaded the data, it passes it to the 'callback' function, 'addPoints', defined below
           callback: addPoints,
           simpleSheet: true
@@ -132,7 +132,7 @@
 
           // create a variable for your popup and populate your popup with information from your table
           var popup = new mapboxgl.Popup()
-            .setHTML(`<h3>` + row.Name + `</h3>` + '<h4>' + '<b>' + 'Address: ' + '</b>' + row.Address + '</h4>' + '<h4>' + '<b>' + 'Phone: ' + '</b>' + row.Phone + '</h4>'); // use the table to populate your popup with text
+            .setHTML(`<h3>` + row["Name ofVillage's No.of WaterBodies/pond's"] + `</h3>`); // use the table to populate your popup with text
 
 
           // create a variable for your markup and add it to the map 
