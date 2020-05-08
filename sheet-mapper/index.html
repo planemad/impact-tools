@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sheet Mapper</title>
+    <meta name="description" content="Plot points from a spreadsheet to a map">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./sheet-config.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+
+
+  </head>
+  <style>
+    body {
+      background: #404040;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    #map {
+      border-left: 1px solid #fff;
+      position: absolute;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+    }
+  </style>
+
+  <body>
+
+    <div id="map"></div>
+    <script>
+      var transformRequest = (url, resourceType) => {
+        var isMapboxRequest =
+          url.slice(8, 22) === "api.mapbox.com" ||
+          url.slice(10, 26) === "tiles.mapbox.com";
+        return {
+          url: isMapboxRequest
+            ? url.replace("?", "?pluginName=sheetMapper&")
+            : url
+        };
+      };
+
+      mapboxgl.accessToken = config.mapboxAccessToken;
+      var map = new mapboxgl.Map(Object.assign({
+        container: 'map', // container id
+        style: "mapbox://styles/mapbox/streets-v11", 
+        center: [77.29808,28.5920],
+        zoom: 9,
+        hash: true,
+        transformRequest: transformRequest
+      },config.map));
+
+
+      map.on("load", function() {
+        init();
+      });
+
+      // Initialize Tabletop to access your table
+      // 
+      function init() {
+        Tabletop.init({
+          key: config.sheetUrl,
+          // once Tabletop has loaded the data, it passes it to the 'callback' function, 'addPoints', defined below
+          callback: addPoints,
+          simpleSheet: true
+        });
+      }
+
+
+      // create a function called addPoints that iterates through your table (row by row) to create markers and popups
+      function addPoints(data) {
+
+        // iterate through your table to set the marker to lat/long values for each row
+
+        data.forEach(function(row) {
+
+          // Define the content of the popup
+
+          let rowHTML = '<ul>'
+          Object.keys(row).forEach(k => {
+              rowHTML += `<li>${k}: ${row[k]}</li>`
+            })
+          rowHTML += '</ul>';
+
+          const popupHTML=`
+          <h3>${row[config.sheetData.titleField]}</h3>
+          <p>${row[config.sheetData.descriptionField]}</p>
+          <details style="max-height:200px;overflow-y:scroll">
+            <summary>More...</summary>
+            ${rowHTML}
+          </details>
+          `;
+
+          // create a variable for your popup and populate your popup with information from your table
+          var popup = new mapboxgl.Popup()
+            .setHTML(popupHTML); // use the table to populate your popup with tex
+
+          // create a variable for your markup and add it to the map 
+          var marker = new mapboxgl.Marker({
+              color: row[config.sheetData.markerColorField]
+            })
+            .setLngLat([row[config.sheetData.longitudeField], row[config.sheetData.latitudeField]])
+            .setPopup(popup)
+            .addTo(map); // add the marker to the map
+
+
+        });
+      }
+
+    </script>
+  </body>
+
+</html>
